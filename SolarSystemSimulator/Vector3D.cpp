@@ -43,10 +43,10 @@ Vector3D& Vector3D::operator+=(const Vector3D& other) {
 	*this = *this + other;
 	return *this;
 }
-Vector3D Vector3D::operator-(Vector3D other) {
-	other.x -= x;
-	other.y -= y;
-	other.z -= z;
+Vector3D Vector3D::operator-(Vector3D other) const {
+	other.x = x - other.x;
+	other.y = y - other.y;
+	other.z = z - other.z;
 	return other;
 }
 

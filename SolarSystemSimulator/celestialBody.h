@@ -40,6 +40,6 @@ public:
 	Vector3D accelerationDueToGravity(const std::vector<celestialBody*>&);
 
 	//Resolve collision
-	void resolveCollision(const std::vector<celestialBody*>&);
+	double resolveCollision(const std::vector<celestialBody*>&);
 };
 

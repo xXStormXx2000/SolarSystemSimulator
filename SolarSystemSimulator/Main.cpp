@@ -47,8 +47,10 @@ int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR lpCmdLi
 	for (int f = 0; Gui::exit; f++) {
 		solarSystem[11]->resolveCollision(solarSystem);
 		for (celestialBody* planet : solarSystem) {
-			planet->velocity += planet->accelerationDueToGravity(solarSystem) * Gui::secondsPerFrame;
-			planet->position += planet->velocity * Gui::secondsPerFrame;
+			planet->velocity += planet->accelerationDueToGravity(solarSystem);
+		}
+		for (celestialBody* planet : solarSystem) if(!planet->resolveCollision(solarSystem)) {
+			planet->position += planet->velocity;
 		}
 		if (f >= 10000) {
 			for (int i = 1; i < 12; i++) {

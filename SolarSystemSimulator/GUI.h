@@ -44,10 +44,9 @@ namespace Gui {
 	LPDIRECT3DDEVICE9 device = nullptr;
 	D3DPRESENT_PARAMETERS presentParameters = {};
 
-	double zoomScalar = 20/6.9e8, planetScalar = 10, offsetX = width / 2, offsetY = height / 2, wheel;
+	double zoomScalar = 20/6.9e8, planetScalar = 1, offsetX = width / 2, offsetY = height / 2, wheel;
 	int focusPlanet = 0;
 	std::vector<queue<Vector3D>> pathDots(12);
-	float secondsPerFrame = 1;
 
 	long __stdcall windowProcess(HWND window, UINT message, WPARAM wideParameter, LPARAM longParameter) {
 
@@ -205,8 +204,6 @@ namespace Gui {
 			ImGui::EndChild();
 			return;
 		}
-
-		if (ImGui::SliderFloat("Time multiplayer", &secondsPerFrame, 0, 100, "%.2f", ImGuiSliderFlags_Logarithmic));
 
 		if (ImGui::Button("Sun")) {
 			focusPlanet = 0;

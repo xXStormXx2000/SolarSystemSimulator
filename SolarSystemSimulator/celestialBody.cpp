@@ -2,7 +2,7 @@
 
 Vector3D celestialBody::singleBodyGravitationalForce(const celestialBody& other) {
 	double d = position.distance(other.position);
-	return ((position - other.position) * other.mass)/(d * d * d);
+	return ((other.position - position) * other.mass)/(d * d * d);
 }
 
 celestialBody::celestialBody(std::string name, double mass, double radius, Vector3D pos, Vector3D vel, std::vector<int> color) : name(name), velocity(vel), position(pos) {
@@ -53,16 +53,39 @@ Vector3D celestialBody::accelerationDueToGravity(const std::vector<celestialBody
 
 
 //Resolve Collision
-void celestialBody::resolveCollision(const std::vector<celestialBody*>& solarSystem) {
+double celestialBody::resolveCollision(const std::vector<celestialBody*>& solarSystem) {
 	celestialBody* other = nullptr;
+	double t1 = 0, r = 0, sq = 0;
+	Vector3D p, v;
 	for (celestialBody* i : solarSystem) {
 		if (i == this) continue;
-		if (radius + i->radius > position.distance(i->position)) {
+		v = i->velocity - velocity;
+		if (v * v == 0) continue;
+		p = i->position - position;
+		r = i->radius + radius;
+		if ((v * p) * (v * p) - (v * v) * ((p * p) - r * r) < 0) continue;
+		sq = sqrt((v * p) * (v * p) - (v * v) * ((p * p) - r * r));
+		t1 = -(v * p + sq) / (v * v);
+		if (-0.001 <= t1 && t1 <= 1) {
 			other = i;
 			break;
 		}
 	}
-	if (other == nullptr) return;
-	position = ((position - other->position).unitVector())*(radius+other->radius) + other->position;
-	velocity = other->velocity;
+	if (other == nullptr) return false;
+	double t2 = 1 - t1;
+
+	position += velocity * t1;
+	other->position += other->velocity * t1;
+
+	Vector3D axisVec = (other->position - position).unitVector();
+	Vector3D v1 = axisVec * (velocity * axisVec);
+	Vector3D v2 = axisVec * (other->velocity * axisVec);
+
+	velocity += (v1 * (mass - other->mass) + v2*2*other->mass) / (mass + other->mass) - v1;
+	other->velocity += (v1 * 2 * mass + v2 * (other->mass - mass)) / (mass + other->mass) - v2;
+
+	position += velocity * t2;
+	other->position += other->velocity * t2;
+
+	return t1;
 }
